@@ -14,55 +14,6 @@
 
 #include <vector>
 
-void ga_plane::get_debug_draw(const ga_mat4f& transform, ga_dynamic_drawcall* drawcall)
-{
-	ga_vec3f position = transform.get_translation() + _point;
-
-	// Get a vector perpendicular to the plane normal.
-	ga_vec3f perp;
-	if (_normal.z < _normal.x) perp = { _normal.y, -_normal.x, 0 };
-	else perp = { 0, -_normal.z, _normal.y };
-
-	// Get two other perpendicular vectors to make our plane points.
-	ga_vec3f vec1 = ga_vec3f_cross(_normal, perp).normal();
-	ga_vec3f vec2 = ga_vec3f_cross(_normal, vec1).normal();
-
-	const float k_plane_size = 10.0f;
-	vec1.scale(k_plane_size);
-	vec2.scale(k_plane_size);
-
-	drawcall->_positions.push_back(-vec1 - vec2);
-	drawcall->_positions.push_back(-vec1 + vec2);
-	drawcall->_positions.push_back(vec1 + vec2);
-	drawcall->_positions.push_back(vec1 - vec2);
-
-	uint32_t indices[] =
-	{
-		0, 2, 1,
-		0, 3, 2,
-	};
-
-	for (int i = 0; i < sizeof(indices) / sizeof(indices[0]); ++i)
-	{
-		drawcall->_indices.push_back(indices[i]);
-	}
-
-	drawcall->_color = { 0.2f, 0.2f, 0.2f };
-	drawcall->_draw_mode = GL_TRIANGLES;
-	drawcall->_transform = transform;
-	drawcall->_material = nullptr;
-}
-
-void ga_plane::get_inertia_tensor(ga_mat4f& tensor, float mass)
-{
-	// Unimplemented.
-}
-
-ga_vec3f ga_plane::get_offset_to_point(const ga_mat4f& transform, const ga_vec3f& point) const
-{
-	// Unimplemented.
-	return ga_vec3f::zero_vector();
-}
 
 void ga_sphere::get_debug_draw(const ga_mat4f& transform, ga_dynamic_drawcall* drawcall)
 {
@@ -128,6 +79,73 @@ ga_vec3f ga_aabb::get_offset_to_point(const ga_mat4f& transform, const ga_vec3f&
 	ga_vec3f center = (_min + _max).scale_result(0.5f);
 	center = transform.transform_point(center);
 	return point - center;
+}
+
+void ga_convex_hull::get_debug_draw(const ga_mat4f& transform, ga_dynamic_drawcall* drawcall)
+{
+	// TODO
+}
+
+void ga_convex_hull::get_inertia_tensor(ga_mat4f& tensor, float mass)
+{
+	// Unimplemented.
+}
+
+ga_vec3f ga_convex_hull::get_offset_to_point(const ga_mat4f& transform, const ga_vec3f& point) const
+{
+	// Unimplemented.
+	return ga_vec3f::zero_vector();
+}
+
+
+void ga_plane::get_debug_draw(const ga_mat4f& transform, ga_dynamic_drawcall* drawcall)
+{
+	ga_vec3f position = transform.get_translation() + _point;
+
+	// Get a vector perpendicular to the plane normal.
+	ga_vec3f perp;
+	if (_normal.z < _normal.x) perp = { _normal.y, -_normal.x, 0 };
+	else perp = { 0, -_normal.z, _normal.y };
+
+	// Get two other perpendicular vectors to make our plane points.
+	ga_vec3f vec1 = ga_vec3f_cross(_normal, perp).normal();
+	ga_vec3f vec2 = ga_vec3f_cross(_normal, vec1).normal();
+
+	const float k_plane_size = 10.0f;
+	vec1.scale(k_plane_size);
+	vec2.scale(k_plane_size);
+
+	drawcall->_positions.push_back(-vec1 - vec2);
+	drawcall->_positions.push_back(-vec1 + vec2);
+	drawcall->_positions.push_back(vec1 + vec2);
+	drawcall->_positions.push_back(vec1 - vec2);
+
+	uint32_t indices[] =
+	{
+		0, 2, 1,
+		0, 3, 2,
+	};
+
+	for (int i = 0; i < sizeof(indices) / sizeof(indices[0]); ++i)
+	{
+		drawcall->_indices.push_back(indices[i]);
+	}
+
+	drawcall->_color = { 0.2f, 0.2f, 0.2f };
+	drawcall->_draw_mode = GL_TRIANGLES;
+	drawcall->_transform = transform;
+	drawcall->_material = nullptr;
+}
+
+void ga_plane::get_inertia_tensor(ga_mat4f& tensor, float mass)
+{
+	// Unimplemented.
+}
+
+ga_vec3f ga_plane::get_offset_to_point(const ga_mat4f& transform, const ga_vec3f& point) const
+{
+	// Unimplemented.
+	return ga_vec3f::zero_vector();
 }
 
 void ga_oobb::get_corners(std::vector<ga_vec3f>& corners) const
@@ -201,20 +219,4 @@ ga_vec3f ga_oobb::get_offset_to_point(const ga_mat4f& transform, const ga_vec3f&
 {
 	ga_vec3f center = transform.transform_point(_center);
 	return point - center;
-}
-
-void ga_convex_hull::get_debug_draw(const ga_mat4f& transform, ga_dynamic_drawcall* drawcall)
-{
-	// TODO
-}
-
-void ga_convex_hull::get_inertia_tensor(ga_mat4f& tensor, float mass)
-{
-	// Unimplemented.
-}
-
-ga_vec3f ga_convex_hull::get_offset_to_point(const ga_mat4f& transform, const ga_vec3f& point) const
-{
-	// Unimplemented.
-	return ga_vec3f::zero_vector();
 }

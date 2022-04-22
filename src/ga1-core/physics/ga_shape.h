@@ -78,6 +78,23 @@ struct ga_plane final : ga_shape
 };
 
 /*
+** Defines a collidable object-oriented bounding box with a center point and
+** three half-vectors that define its extents.
+*/
+struct ga_oobb final : ga_shape
+{
+	ga_vec3f _center = ga_vec3f::zero_vector();
+	ga_vec3f _half_vectors[3];
+
+	ga_shape_t get_type() const override { return k_shape_oobb; }
+	void get_debug_draw(const ga_mat4f& transform, struct ga_dynamic_drawcall* drawcall) override;
+	void get_inertia_tensor(ga_mat4f& tensor, float mass) override;
+	ga_vec3f get_offset_to_point(const ga_mat4f& transform, const ga_vec3f& point) const override;
+
+	void get_corners(std::vector<ga_vec3f>& corners) const;
+};
+
+/*
 ** Defines a collidable sphere with a center point and radius.
 */
 struct ga_sphere final : ga_shape
@@ -103,23 +120,6 @@ struct ga_aabb final : ga_shape
 	void get_debug_draw(const ga_mat4f& transform, struct ga_dynamic_drawcall* drawcall) override;
 	void get_inertia_tensor(ga_mat4f& tensor, float mass) override;
 	ga_vec3f get_offset_to_point(const ga_mat4f& transform, const ga_vec3f& point) const override;
-};
-
-/*
-** Defines a collidable object-oriented bounding box with a center point and
-** three half-vectors that define its extents.
-*/
-struct ga_oobb final : ga_shape
-{
-	ga_vec3f _center;
-	ga_vec3f _half_vectors[3];
-
-	ga_shape_t get_type() const override { return k_shape_oobb; }
-	void get_debug_draw(const ga_mat4f& transform, struct ga_dynamic_drawcall* drawcall) override;
-	void get_inertia_tensor(ga_mat4f& tensor, float mass) override;
-	ga_vec3f get_offset_to_point(const ga_mat4f& transform, const ga_vec3f& point) const override;
-
-	void get_corners(std::vector<ga_vec3f>& corners) const;
 };
 
 /*
